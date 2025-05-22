@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>📊 Statistiques</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">📈 Statistiques des lettres détectées</h1>
+
+    <!-- Boutons de contrôle -->
+    <div class="mb-4 text-center">
+        <a href="/reset_stats" class="btn btn-danger me-2">🗑️ Réinitialiser les statistiques</a>
+        <a href="/export_csv" class="btn btn-outline-primary">📥 Exporter en CSV</a>
+    </div>
+
+    <!-- Graphique Chart.js -->
+    <canvas id="letterChart" width="400" height="200"></canvas>
+
+    <!-- Tableau HTML des stats -->
+    <table class="table table-striped table-bordered mt-5">
+        <thead class="table-dark">
+            <tr>
+                <th>Lettre</th>
+                <th>Nombre de détections</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for letter, count in stats.items() %}
+            <tr>
+                <td>{{ letter }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-secondary">⬅ Retour au menu</a>
+    </div>
+</div>
+
+<!-- Script Chart.js -->
+<script>
+    const labelsData = {{ stats.keys() | list | tojson }};
+    const valuesData = {{ stats.values() | list | tojson }};
+
+    const ctx = document.getElementById('letterChart').getContext('2d');
+    const letterChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labelsData,
+            datasets: [{
+                label: 'Détections par lettre',
+                data: valuesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
